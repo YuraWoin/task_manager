@@ -1,4 +1,6 @@
 import customtkinter as ctk
+import json
+
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -53,11 +55,24 @@ class MainWindow(ctk.CTk):
         )
         self.theme_btn.pack(side="right", padx=10, pady=5)
 
+        self.load_tasks()
         self.render_tasks()
 
     def create_list_frame(self):
         self.list_frame = ctk.CTkScrollableFrame(self)
         self.list_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+
+    def save_tasks(self):
+            with open("tasks.json", "w", encoding="utf-8") as f:
+                json.dump(list(self.tasks.values()), f, ensure_ascii=False, indent=4)
+
+    def load_tasks(self):
+        with open("tasks.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+            for task in data:
+                self.tasks[self.next_id] = task
+                self.next_id = self.next_id + 1
+
 
     def add_task(self, event=None):
         text = self.task_entry.get().strip()
@@ -147,6 +162,8 @@ class MainWindow(ctk.CTk):
             self.create_task_row(tid, done[tid])
 
         self.update_stats()
+        self.update_stats()
+        self.save_tasks()
 
     def update_stats(self):
         total = len(self.tasks)
@@ -167,6 +184,5 @@ class MainWindow(ctk.CTk):
             self.theme_btn.configure(fg_color="white")
 
 
-if __name__ == "__main__":
-    app = MainWindow()
-    app.mainloop()
+app = MainWindow()
+app.mainloop()
